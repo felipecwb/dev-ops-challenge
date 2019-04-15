@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+PROJECT=todo-test
+FILE='.docker/compose.test.yml'
+
+WAIT=15
+
+echo ">> start test environment..."
+docker-compose -p $PROJECT -f $FILE up -d
+
+echo ">> wait db connection $WAIT seconds..."
+sleep $WAIT
+
+echo ">> execute tests suite"
+docker-compose -p $PROJECT -f $FILE exec --user todo api vendor/bin/behat
+RETURN=$?
+
+echo ">> turn down test environment..."
+docker-compose -p $PROJECT -f $FILE down -v
+
+exit $RETURN
+
