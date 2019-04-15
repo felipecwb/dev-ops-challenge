@@ -1,0 +1,14 @@
+default:
+  suites:
+    default:
+      contexts: [ Imbo\BehatApiExtension\Context\ApiContext ]
+
+  formatters:
+    pretty: true
+
+  extensions:
+    Imbo\BehatApiExtension:
+      apiClient:
+        base_uri: http://localhost:8080/
+        timeout: 5.0
+        verify: false
