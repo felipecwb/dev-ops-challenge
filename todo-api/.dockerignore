@@ -1,4 +1,5 @@
-behat.yml
 .git/
+.docker/
+behat.yml
 test/
 vendor/

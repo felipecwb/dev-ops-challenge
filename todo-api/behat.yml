@@ -1,6 +1,10 @@
 default:
+  autoload:
+    '': '%paths.base%/test/features/bootstrap'
+
   suites:
     default:
+      paths: [ '%paths.base%/test/features' ]
       contexts: [ Imbo\BehatApiExtension\Context\ApiContext ]
 
   formatters:

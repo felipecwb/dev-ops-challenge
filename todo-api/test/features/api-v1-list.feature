@@ -1,4 +1,4 @@
-Feature: create an item on list
+Feature: REST for todo list endpoint
 
     Scenario: list when empty
         When I request '/v1/list' using HTTP GET

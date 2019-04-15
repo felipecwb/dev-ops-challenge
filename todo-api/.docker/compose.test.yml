@@ -23,6 +23,8 @@ services:
       MYSQL_PASSWORD: test
       MYSQL_DATABASE: test
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    tmpfs:
+      - /var/lib/mysql
     volumes:
       - ./database-entry.sql:/docker-entrypoint-initdb.d/entry.sql:ro
 

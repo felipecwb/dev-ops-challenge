@@ -2,21 +2,26 @@
 
 PROJECT=todo-test
 FILE='.docker/compose.test.yml'
+WAIT=10
 
-WAIT=15
+docker_compose="docker-compose -p $PROJECT -f $FILE"
+docker_exec="$docker_compose exec --user=todo api"
 
 echo ">> start test environment..."
-docker-compose -p $PROJECT -f $FILE up -d
+$docker_compose up -d
+
+echo ">> ensure composer dependencies"
+$docker_exec composer install
 
 echo ">> wait db connection $WAIT seconds..."
 sleep $WAIT
 
 echo ">> execute tests suite"
-docker-compose -p $PROJECT -f $FILE exec --user todo api vendor/bin/behat
+$docker_exec vendor/bin/behat
 RETURN=$?
 
 echo ">> turn down test environment..."
-docker-compose -p $PROJECT -f $FILE down -v
+$docker_compose down -v
 
 exit $RETURN
 
