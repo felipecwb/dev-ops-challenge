@@ -1,0 +1,69 @@
+version: '3.7'
+
+networks:
+  network:
+    driver: overlay
+  proxy_frontend:
+    external: true
+
+volumes:
+  data:
+    driver: local
+
+configs:
+  database-entry:
+    file: ./.docker/database-entry.sql
+
+services:
+  api:
+    image: ${IMAGE}
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-staging}
+      DATABASE_DSN: mysql:host=database;port=3306;dbname=todo
+      DATABASE_USER: todo
+      DATABASE_PASSWORD: 250e77f12a5ab6972a0895d290c4792f0a326ea8
+    networks:
+      - network
+      - proxy_frontend
+    depends_on:
+      - database
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      labels:
+        traefik.enable: 'true'
+        traefik.port: 8080
+        traefik.frontend.rule: "Host:api.${DOMAIN}"
+
+  database:
+    image: mysql:8
+    command: "--default-authentication-plugin=mysql_native_password"
+    environment:
+      MYSQL_DATABASE: todo
+      MYSQL_USER: todo
+      MYSQL_PASSWORD: 250e77f12a5ab6972a0895d290c4792f0a326ea8
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    networks:
+      - network
+    configs:
+      - source: database-entry
+        target: /docker-entrypoint-initdb.d/entry.sql
+    volumes:
+      - data:/var/lib/mysql
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+
