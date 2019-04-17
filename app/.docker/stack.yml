@@ -3,7 +3,7 @@ version: '3.7'
 networks:
   network:
     driver: overlay
-  proxy_frontend:
+  proxy_network:
     external: true
 
 volumes:
@@ -24,7 +24,7 @@ services:
       DATABASE_PASSWORD: 250e77f12a5ab6972a0895d290c4792f0a326ea8
     networks:
       - network
-      - proxy_frontend
+      - proxy_network
     depends_on:
       - database
     deploy:
@@ -38,7 +38,7 @@ services:
       labels:
         traefik.enable: 'true'
         traefik.port: 8080
-        traefik.frontend.rule: "Host:api.${DOMAIN}"
+        traefik.frontend.rule: "Host:todo-api.${DOMAIN}"
 
   database:
     image: mysql:8
