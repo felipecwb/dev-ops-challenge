@@ -1,12 +1,14 @@
 pipeline {
+    agent any
+
     environment {
-        DOMAIN = ${env.DOMAIN}
+        DOMAIN = "${env.DOMAIN}"
         IMAGE = "felipecwb/todo-api"
     }
 
     stages {
         stage('Build Image') {
-            app = docker.build(${env.IMAGE})
+            app = docker.build("${env.IMAGE}")
         }
 
         stage('Test') {
