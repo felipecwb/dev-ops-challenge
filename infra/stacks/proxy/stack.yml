@@ -1,0 +1,78 @@
+version: "3.7"
+
+networks:
+  network:
+    driver: overlay
+  docker_network:
+    external: true
+
+volumes:
+  traefik_data:
+    driver: local
+  consul_data:
+    driver: local
+
+configs:
+  traefik_config:
+    file: ./config.toml
+
+services:
+  traefik:
+    image: traefik:latest
+    command: '--configfile=/etc/traefik/config.toml'
+    ports:
+      - target: 80
+        published: 80
+      - target: 443
+        published: 443
+    networks:
+      - network
+      - docker_network
+    configs:
+      - source: traefik_config
+        target: /etc/traefik/config.toml
+    volumes:
+      - traefik_data:/tmp
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: any
+      #placement:
+      #  constraints: 
+      #    - node.role == manager
+      labels:
+        traefik.enable: 'true'
+        traefik.port: '8080'
+        traefik.frontend.rule: "Host:traefik.${DOMAIN}"
+        traefik.frontend.entryPoints: 'http,https'
+
+  consul:
+    image: progrium/consul
+    command: '-server -bootstrap-expect=1 -dc=ops -data-dir=/data -ui-dir=/ui'
+    networks:
+      - network
+    volumes:
+      - consul_data:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: any
+      placement:
+        constraints: 
+          - node.role == manager
+      labels:
+        traefik.enable: 'true'
+        traefik.port: '8500'
+        traefik.frontend.rule: "Host:consul.${DOMAIN}"
+        traefik.frontend.entryPoints: 'http,https'

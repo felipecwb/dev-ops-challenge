@@ -1,16 +1,15 @@
-version: '3.7'
+version: "3.7"
 
 networks:
-  net:
+  network:
     driver: overlay
-    attachable: true
 
 services:
   manager:
     image: alpine/socat:latest
-    command:  tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    command: 'tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock'
     networks:
-      - net
+      - network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
@@ -26,9 +25,9 @@ services:
 
   worker:
     image: alpine/socat:latest
-    command:  tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    command: 'tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock'
     networks:
-      - net
+      - network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
@@ -36,6 +35,25 @@ services:
       placement:
         constraints:
           - node.role == worker
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+
+  worker_ci:
+    image: alpine/socat:latest
+    command: 'tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock'
+    networks:
+      - network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.ci == true
       update_config:
         parallelism: 1
         delay: 10s

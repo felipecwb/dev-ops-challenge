@@ -1,0 +1,57 @@
+
+debug = false
+logLevel = "ERROR"
+
+[accessLog]
+
+[healthcheck]
+  interval = "30s"
+
+[retry]
+  attempts = 5
+
+[ping]
+  entryPoint = "http"
+
+[api]
+  entryPoint = "traefik"
+  dashboard = true
+
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.traefik]
+    address = ":8080"
+
+  [entryPoints.http]
+    address = ":80"
+    [entryPoints.http.redirect]
+      entryPoint = "https"
+
+  [entryPoints.https]
+    address = ":443"
+    [entryPoints.https.tls]
+
+[acme]
+  email = "fake.mail@maildrop.cc"
+  storage = "traefik/acme/account"
+  #storageFile = "acme.json"
+  entryPoint = "https"
+  onHostRule = true
+  acmeLogging = true
+  [acme.httpChallenge]
+    entryPoint = "http"
+
+[consul]
+  endpoint = "consul:8500"
+  prefix = "traefik"
+  watch = true
+
+[docker]
+  endpoint = "tcp://docker_manager:2375"
+  network = "proxy_network"
+  domain = "localhost"
+  watch = true
+  swarmMode = true
+  swarmModeRefreshSeconds = 20
+  exposedByDefault = false

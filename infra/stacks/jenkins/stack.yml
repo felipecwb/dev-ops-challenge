@@ -1,0 +1,37 @@
+version: "3.7"
+
+networks:
+  proxy_network:
+    external: true
+  docker_network:
+    external: true
+
+volumes:
+  data:
+    driver: local
+
+services:
+  master:
+    image: shimmi/jenkins:lts
+    networks:
+      - proxy_network
+      - docker_network
+    environment:
+      DOCKER_HOST: 'tcp://docker_worker_ci:2375'
+    volumes:
+      - data:/var/jenkins_home
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.ci == true
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+      labels:
+        traefik.enable: 'true'
+        traefik.port: '8080'
+        traefik.frontend.rule: "Host:jenkins.${DOMAIN}"
+        traefik.frontend.entryPoints: 'http,https'

@@ -1,0 +1,28 @@
+version: "3.7"
+
+networks:
+  proxy_network:
+    external: true
+  docker_network:
+    external: true
+
+services:
+  swarm:
+    image: dockersamples/visualizer
+    networks:
+      - proxy_network
+      - docker_network
+    environment:
+      DOCKER_HOST: 'docker_manager:2375'
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+      labels:
+        traefik.enable: 'true'
+        traefik.port: '8080'
+        traefik.frontend.rule: "Host:swarm-visualizer.${DOMAIN}"
+        traefik.frontend.entryPoints: 'http,https'

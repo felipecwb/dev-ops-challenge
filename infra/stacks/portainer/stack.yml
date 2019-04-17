@@ -1,0 +1,50 @@
+version: '3.7'
+
+networks:
+  proxy_network:
+    external: true
+  network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  data:
+    driver: local
+
+services:
+  master:
+    image: portainer/portainer:latest
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    environment:
+      AGENT_SECRET: 17b0eb30f4087a1b930f4c73fd6f15f2a8f51816
+    volumes:
+      - data:/data
+    networks:
+      - network
+      - proxy_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        traefik.enable: "true"
+        traefik.port: "9000"
+        traefik.frontend.rule: "Host:portainer.${DOMAIN}"
+        traefik.frontend.entryPoints: "http,https"
+
+  agent:
+    image: portainer/agent:latest
+    environment:
+      AGENT_SECRET: 17b0eb30f4087a1b930f4c73fd6f15f2a8f51816
+      AGENT_CLUSTER_ADDR: tasks.agent
+      AGENT_PORT: 9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - network
+    deploy:
+      mode: global
+      placement:
+        constraints: 
+          - node.platform.os == linux
+
