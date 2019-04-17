@@ -12,7 +12,7 @@ volumes:
 
 configs:
   database-entry:
-    file: ./.docker/database-entry.sql
+    file: ../resources/database/mysql.sql
 
 services:
   api:
@@ -66,4 +66,3 @@ services:
         delay: 10s
         order: start-first
         failure_action: rollback
-

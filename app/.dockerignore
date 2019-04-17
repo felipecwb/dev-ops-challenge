@@ -1,5 +1,3 @@
 .git/
 .docker/
-behat.yml
-test/
 vendor/

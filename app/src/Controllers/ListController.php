@@ -35,19 +35,18 @@ class ListController
             return $response->withJson(['error' => 'attribute title is missing.'], 428);
         }
 
+        $date = new DateTime();
         $todo = (object) [
             'id'          => null,
             'title'       => $body['title'],
             'description' => $body['description'] ?? null,
-            'status'      => 'pending'
+            'status'      => 'pending',
+            'created_at'  => $date->format('Y-m-d H:i:s'),
+            'updated_at'  => $date->format('Y-m-d H:i:s')
         ];
 
         $this->mapper->list->persist($todo);
         $this->mapper->flush();
-
-        $date = new DateTime();
-        $todo->created_at = $date->format(DateTime::W3C);
-        $todo->updated_at = $date->format(DateTime::W3C);
 
         return $response->withJson($todo, 201);
     }
@@ -79,6 +78,8 @@ class ListController
         if (isset($body['status']) && in_array($body['status'], ['pending', 'done'])) {
             $todo->status = $body['status'];
         }
+
+        $todo->updated_at = date('Y-m-d H:i:s');
 
         $this->mapper->list->persist($todo);
         $this->mapper->flush();

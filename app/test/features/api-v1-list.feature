@@ -69,4 +69,4 @@ Feature: REST for todo list endpoint
           "updated_at": "@variableType(string)"
         }
         """
-
+  

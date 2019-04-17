@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+LISTEN=0.0.0.0:9898
+URL="http://${LISTEN}/"
+SQLFILE=resources/database/sqlite.sql
+DBFILE=/tmp/todo.db
+
+if [ ! -f $SQLFILE ]; then
+    echo "- cannot execute sqlite base creation!"
+    exit 123
+fi
+
+echo '+ composer install dev dependencies'
+composer install --prefer-dist
+
+if [ -f $DBFILE ]; then
+    echo '+ remove old $DBFILE'
+    rm -v $DBFILE
+fi
+
+echo "+ create new $DBFILE"
+sqlite3 $DBFILE < $SQLFILE
+
+echo '+ start php+http server'
+export DATABASE_DSN="sqlite:$DBFILE"
+php -S ${LISTEN} -t public/ public/index.php &
+SERVER_PID=$!
+
+echo "+ sleep ${WAIT}s"
+curl -f sleep $WAIT
+
+echo '+ run behat'
+export BEHAT_PARAMS="{\"extensions\":{\"Imbo\\\\BehatApiExtension\":{\"apiClient\":{\"base_uri\": \"${URL}\"}}}}"
+vendor/bin/behat
+STATUS=$?
+
+echo '+ kill server'
+kill $SERVER_PID
+
+exit $STATUS

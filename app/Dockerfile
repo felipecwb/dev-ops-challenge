@@ -12,6 +12,7 @@ RUN addgroup -g 1000 $GROUP \
 # installs
 RUN apk add --update --no-cache \
     curl \
+    sqlite \
     runit \
     nginx \
     php7 \
@@ -119,10 +120,7 @@ RUN sed -i "s|user nginx|user $USER $GROUP|" /etc/nginx/nginx.conf \
 RUN curl https://getcomposer.org/composer.phar -o /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
 
-EXPOSE 8080
-
-CMD ["runsvdir", "/etc/service"]
-
+USER ${USER}
 WORKDIR $WORKDIR
 
 COPY --chown=todo:todo composer.json composer.lock $WORKDIR/
@@ -130,3 +128,11 @@ RUN composer install --prefer-dist --optimize-autoloader --no-dev --no-interacti
 
 COPY --chown=todo:todo . $WORKDIR/
 
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl --fail http://localhost:8080/healthcheck || exit 1
+
+# requires root
+USER root
+CMD ["runsvdir", "/etc/service"]
