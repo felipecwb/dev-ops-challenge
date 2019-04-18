@@ -15,12 +15,16 @@ pipeline {
             }
         }
 
-        stage('Testes') {
+        stage('Test') {
             steps {
                 script {
-                    dockerImage.inside {
+                    dockerImage.withRun() { c ->
                         sh 'bin/test'
                     }
+
+                    //dockerImage.inside {
+                    //    sh 'bin/test'
+                    //}
                 }
             }
         }
@@ -36,9 +40,10 @@ pipeline {
             }
         }
 
-        stage('Remove Unused docker image') {
+        stage('Clean Workspace') {
             steps{
-                sh "docker rmi $IMAGE:$BUILD_NUMBER"
+                sh "docker image prune -af"
+                deleteDIr()
             }
         }
     }
