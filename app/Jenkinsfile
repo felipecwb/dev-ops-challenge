@@ -10,7 +10,8 @@ pipeline {
         stage('Testes') {
             agent {
                 dockerfile {
-                    dir '.'
+                    filename 'app/Dockerfile'
+                    dir 'app'
                 }
             }
             
