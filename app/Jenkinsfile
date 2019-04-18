@@ -1,24 +1,44 @@
 pipeline {
     environment {
+        registryCredential = 'dockerhub'
         DOMAIN = "${env.DOMAIN}"
         IMAGE = "felipecwb/todo-api"
     }
 
-    agent none
+    agent any
 
     stages {
+        stage('Build') {
+            steps{
+                script {
+                    dockerImage = IMAGE + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
         stage('Testes') {
             agent {
-                dockerfile {
-                    dir 'app/'
-                    filename 'Dockerfile'
-                }
+                docker { image IMAGE + ":build.$BUILD_NUMBER" }
             }
             
             steps {
-                echo "${env.DOMAIN}"
-                sh 'ls -lsa'
                 sh './bin/test'
+            }
+        }
+
+        stage('Deploy Image') {
+            steps{
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Remove Unused docker image') {
+            steps{
+                sh "docker rmi $registry:$BUILD_NUMBER"
             }
         }
     }
