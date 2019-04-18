@@ -28,7 +28,7 @@ Criar uma pipeline de CI/CD para possibilitar o deploy contínuo da aplicação 
  - Testes;
  - Deploy.
 
-- [**pasta app/Jenkinsfile**](app/Jenkinsfile)
+. [**pasta app/Jenkinsfile**](app/Jenkinsfile)
 
 ### Como:
 Faça um pull request para este repositório com o seu código.
