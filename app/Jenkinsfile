@@ -1,6 +1,5 @@
 pipeline {
     environment {
-        registryCredential = 'dockerhub'
         DOMAIN = "${env.DOMAIN}"
         IMAGE = "felipecwb/todo-api"
     }
@@ -9,7 +8,7 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps{
+            steps {
                 script {
                     dockerImage = docker.build IMAGE + ":$BUILD_NUMBER", 'app'
                 }
@@ -17,20 +16,21 @@ pipeline {
         }
 
         stage('Testes') {
-            agent {
-                docker { image IMAGE + ":build.$BUILD_NUMBER" }
-            }
-            
             steps {
-                sh './bin/test'
+                script {
+                    dockerImage.inside {
+                        sh 'bin/test'
+                    }
+                }
             }
         }
 
         stage('Deploy Image') {
-            steps{
+            steps {
                 script {
-                    docker.withRegistry('', registryCredential) {
+                    docker.withRegistry('', 'dockerhub') {
                         dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
