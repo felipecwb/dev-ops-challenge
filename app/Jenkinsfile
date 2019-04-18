@@ -18,8 +18,17 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dockerImage.withRun('-it -u todo', 'tail -f /dev/null') {
-                        sh 'bin/test'
+                    dockerImage.inside('-it -u todo', 'tail -f /dev/null') {
+                        stage('Dev Dependencies') {
+                            step {
+                                sh 'composer install'
+                            }
+                        }
+                        stage('integration Tests') {
+                            step {
+                                sh 'bin/test'
+                            }
+                        }
                     }
                 }
             }
