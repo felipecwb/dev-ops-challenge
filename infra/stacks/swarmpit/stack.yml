@@ -6,8 +6,6 @@ networks:
     attachable: true
   proxy_network:
     external: true
-  docker_network:
-    external: true
 
 volumes:
   data:
@@ -18,11 +16,11 @@ services:
     image: swarmpit/swarmpit:latest
     environment:
       SWARMPIT_DB: 'http://database:5984'
-      DOCKER_HOST: 'tcp://docker_manager:2375'
     networks:
       - network
       - proxy_network
-      - docker_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       replicas: 1
       resources:
@@ -44,11 +42,11 @@ services:
   agent:
     image: swarmpit/agent:latest
     environment:
-      DOCKER_HOST: 'tcp://tasks.docker_worker:2375'
       DOCKER_API_VERSION: '1.35'
     networks:
       - network
-      - docker_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       mode: global
       resources:
