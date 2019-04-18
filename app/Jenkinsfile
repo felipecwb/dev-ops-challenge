@@ -19,16 +19,8 @@ pipeline {
             steps {
                 script {
                     dockerImage.inside('-it -u todo', 'tail -f /dev/null') {
-                        stage('Dev Dependencies') {
-                            step {
-                                sh 'composer install'
-                            }
-                        }
-                        stage('integration Tests') {
-                            step {
-                                sh 'bin/test'
-                            }
-                        }
+                        sh 'composer install'
+                        sh 'bin/test'
                     }
                 }
             }
