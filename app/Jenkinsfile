@@ -62,12 +62,6 @@ pipeline {
 
             steps {
                 sh '''
-                pwd
-                ls -ls
-                echo $DOCKER_HOST
-                '''
-
-                sh '''
                     export DOCKER_HOST=${dockerManagerHost}
 
                     export ENVIRONMENT=production
@@ -75,10 +69,8 @@ pipeline {
 
                     docker stack deploy \
                         --with-registry-auth \
-                        --compose-file .docker/stack.yml \
+                        --compose-file app/.docker/stack.yml \
                         ${stack}
-
-                    
                 '''
             }
         }
