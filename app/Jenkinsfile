@@ -4,7 +4,7 @@ pipeline {
         IMAGE = "felipecwb/todo-api"
     }
 
-    agent any
+    agent none
 
     stages {
         stage('Testes') {
@@ -16,7 +16,8 @@ pipeline {
             }
             
             steps {
-                sh 'echo "${env.DOMAIN}"'
+                echo "${env.DOMAIN}"
+                sh 'ls -lsa'
                 sh './bin/test'
             }
         }
