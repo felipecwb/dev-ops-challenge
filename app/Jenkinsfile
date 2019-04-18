@@ -60,20 +60,16 @@ pipeline {
                 branch 'master'
             }
 
-            agent {
-                docker {
-                    image 'docker:latest'
-                    args '-e DOCKER_HOST=${dockerManagerHost}'
-                }
-            }
-
             steps {
                 sh '''
                 pwd
                 ls -ls
+                echo $DOCKER_HOST
                 '''
 
                 sh '''
+                    export DOCKER_HOST=${dockerManagerHost}
+
                     export ENVIRONMENT=production
                     export DOMAIN=${DOMAIN}
 
@@ -81,12 +77,15 @@ pipeline {
                         --with-registry-auth \
                         --compose-file .docker/stack.yml \
                         ${stack}
+
+                    
                 '''
             }
         }
 
         stage('Clean Workspace') {
             steps{
+                sh 'echo $DOCKER_HOST'
                 sh "docker image prune -af"
             }
         }
