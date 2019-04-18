@@ -56,6 +56,6 @@ bash deploy.sh all
 Agora só configurar:
 - jenkins.$DOMAIN
 
-variaveis no Jenkins: DOMAIN, DOCKER_MANAGER_HOST
-
+variaveis no Jenkins: DOMAIN, DOCKER_MANAGER_HOST  
+configuração das credenciais: dockerhub
 para esse projeto precisei alterar: 'app/Jenkinsfile' no projeto.
