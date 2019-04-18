@@ -24,8 +24,9 @@ pipeline {
             }
 
             steps {
+                sh 'cd /home/todo'
                 sh 'composer install'
-                sh '/home/todo/bin/test'
+                sh 'bin/test'
             }
         }
 
