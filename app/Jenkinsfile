@@ -69,6 +69,11 @@ pipeline {
 
             steps {
                 sh '''
+                pwd
+                ls -ls
+                '''
+
+                sh '''
                     export ENVIRONMENT=production
                     export DOMAIN=${DOMAIN}
 
