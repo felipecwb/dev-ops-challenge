@@ -26,7 +26,6 @@ create() {
         --digitalocean-ssh-key-path $MACHINE_SSH_KEYPATH \
         --digitalocean-ssh-key-fingerprint $MACHINE_SSH_KEYFP \
         --digitalocean-ipv6 \
-        --digitalocean-monitoring \
         $name
 
     return $?
