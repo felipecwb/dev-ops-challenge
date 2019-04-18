@@ -47,7 +47,9 @@ eval $(docker-machine env $leader_node_name) # exemplo: prod-manager-01
 bash deploy.sh all
 ```
 
-
 Agora só configurar:
-- portainer.$DOMAIN
 - jenkins.$DOMAIN
+
+variaveis no Jenkins: DOMAIN, DOCKER_MANAGER_HOST
+
+para esse projeto precisei alterar: 'app/Jenkinsfile' no projeto.
