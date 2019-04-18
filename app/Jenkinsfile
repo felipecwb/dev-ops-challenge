@@ -18,7 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dockerImage.withRun() { c ->
+                    dockerImage.inside { c ->
                         sh 'bin/test'
                     }
 
