@@ -18,7 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dockerImage.withRun('-it', 'cat') { c -> 
+                    dockerImage.withRun('-it -u todo', 'tail -f /dev/null') {
                         sh 'bin/test'
                     }
                 }
