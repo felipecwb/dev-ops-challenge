@@ -16,13 +16,16 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                script {
-                    dockerImage.inside('-it -u todo', 'tail -f /dev/null') {
-                        sh 'composer install'
-                        sh 'bin/test'
-                    }
+            agent {
+                dockerfile {
+                    dir 'app'
+                    filename 'Dockerfile'
                 }
+            }
+
+            steps {
+                sh 'composer install'
+                sh 'bin/test'
             }
         }
 
