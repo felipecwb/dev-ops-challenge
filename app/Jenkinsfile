@@ -18,20 +18,22 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dockerImage.withRun('bin/test')
+                    dockerImage.withRun('bin/test') {
 
-                    //dockerImage.inside() { c ->
-                    //    sh 'bin/test'
-                    //}
+                    }
 
-                    //dockerImage.inside {
-                    //    sh 'bin/test'
-                    //}
+                    dockerImage.inside {
+                        sh 'bin/test'
+                    }
                 }
             }
         }
 
         stage('Deploy Image') {
+            when {
+                branch 'master'
+            }
+
             steps {
                 script {
                     docker.withRegistry('', 'dockerhub') {
