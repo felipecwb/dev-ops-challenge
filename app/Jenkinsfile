@@ -24,9 +24,10 @@ pipeline {
             }
 
             steps {
-                sh 'cd /home/todo'
-                sh 'composer install'
-                sh 'bin/test'
+                echo 'Composer: Dev Required'
+                sh 'cd ${WORKDIR} && composer install'
+                echo 'Integration tests'
+                sh 'cd ${WORKDIR} && bin/test'
             }
         }
 
