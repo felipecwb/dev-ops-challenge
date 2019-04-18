@@ -32,6 +32,12 @@ docker stack ls
 docker service ls
 ```
 
+**adicionar node de ci:**
+label do node que vai executar o jenkins jobs:
+```sh
+docker node update --label-add ci=true $leader_node_name # exemplo: prod-worker-02
+```
+
 ### stacks:
 
 no diretório `stacks`.  
