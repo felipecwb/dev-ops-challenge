@@ -1,0 +1,79 @@
+version: '3.7'
+
+networks:
+  network:
+    driver: overlay
+    attachable: true
+  proxy_network:
+    external: true
+  docker_network:
+    external: true
+
+volumes:
+  data:
+    driver: local
+
+services:
+  app:
+    image: swarmpit/swarmpit:latest
+    environment:
+      SWARMPIT_DB: 'http://database:5984'
+      DOCKER_HOST: 'tcp://docker_manager:2375'
+    networks:
+      - network
+      - proxy_network
+      - docker_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        traefik.enable: "true"
+        traefik.port: "8080"
+        traefik.frontend.rule: "Host:swarmkit.${DOMAIN}"
+        traefik.frontend.entryPoints: "http,https"
+
+  agent:
+    image: swarmpit/agent:latest
+    environment:
+      DOCKER_HOST: 'tcp://tasks.docker_worker:2375'
+      DOCKER_API_VERSION: '1.35'
+    networks:
+      - network
+      - docker_network
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
+
+  database:
+    image: couchdb:2.3
+    volumes:
+      - data:/opt/couchdb/data
+    networks:
+      - network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 512M
+        reservations:
+          cpus: '0.15'
+          memory: 256M
+      placement:
+        constraints:
+          - node.role == manager

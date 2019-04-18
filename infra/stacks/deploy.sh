@@ -3,7 +3,7 @@ set -e
 
 stack=$1
 
-stacks=( "docker" "proxy" "portainer" "visualizer" "jenkins" )
+stacks=( "docker" "proxy" "portainer" "swarmpit" "visualizer" "jenkins" )
 
 if [ -z $stack ]; then
     echo '>>> stack not defined use: deploy.sh <stack>'

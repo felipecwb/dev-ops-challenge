@@ -77,7 +77,6 @@ pipeline {
 
         stage('Clean Workspace') {
             steps{
-                sh 'echo $DOCKER_HOST'
                 sh "docker image prune -af"
             }
         }

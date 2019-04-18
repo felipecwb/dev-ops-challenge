@@ -39,6 +39,7 @@ services:
         traefik.enable: 'true'
         traefik.port: 8080
         traefik.frontend.rule: "Host:todo-api.${DOMAIN}"
+        traefik.frontend.entryPoints: 'http,https'
 
   database:
     image: mysql:8
