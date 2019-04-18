@@ -18,7 +18,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    dockerImage.withRun('', 'bin/test') {
+                    dockerImage.inside('', 'cat') {
+                        sh 'bin/test'
                     }
                 }
             }
@@ -42,7 +43,6 @@ pipeline {
         stage('Clean Workspace') {
             steps{
                 sh "docker image prune -af"
-                deleteDIr()
             }
         }
     }
