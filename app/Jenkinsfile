@@ -4,6 +4,8 @@ pipeline {
         IMAGE = "felipecwb/todo-api"
     }
 
+    agent any
+
     stages {
         stage('Testes') {
             agent {
