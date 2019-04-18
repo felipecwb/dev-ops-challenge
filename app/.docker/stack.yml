@@ -16,9 +16,9 @@ configs:
 
 services:
   api:
-    image: ${IMAGE}
+    image: felipecwb/todo-api:latest
     environment:
-      ENVIRONMENT: ${ENVIRONMENT:-staging}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
       DATABASE_DSN: mysql:host=database;port=3306;dbname=todo
       DATABASE_USER: todo
       DATABASE_PASSWORD: 250e77f12a5ab6972a0895d290c4792f0a326ea8

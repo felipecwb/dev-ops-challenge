@@ -1,25 +1,20 @@
 pipeline {
-    agent any
-
     environment {
         DOMAIN = "${env.DOMAIN}"
         IMAGE = "felipecwb/todo-api"
     }
 
     stages {
-        stage('Build Image') {
-            app = docker.build("${env.IMAGE}")
-        }
-
-        stage('Test') {
-            app.inside {
-                sh 'bin/test'
+        stage('Testes') {
+            agent {
+                dockerfile {
+                    dir '.'
+                }
             }
-        }
-
-        stage('Deploy') {
-            app.inside {
-                sh 'echo "fake deploy ${env.DOMAIN} ${env.IMAGE}"'
+            
+            steps {
+                sh 'echo "${env.DOMAIN}"'
+                sh './bin/test'
             }
         }
     }
